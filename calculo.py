@@ -135,7 +135,11 @@ def extract_penalties_from_html(text: str, keywords, debug=False):
 
         # se nada encontrado por ocorrências diretas, tentar procurar padrões que combinem crime + 'pena' em proximidade
         if not penalties_found:
-            pattern = re.compile(r'({kw}).{0,200}(pena|reclus[aã]o|detenç[aã]o).{0,200}'.format(kw=re.escape(kw_lower)), re.IGNORECASE | re.DOTALL)
+            # corrigido: não usar .format com chaves de regex (quantifiers {0,200}) — concatenei a parte escapada
+            pattern = re.compile(
+                r'(' + re.escape(kw_lower) + r').{0,200}(pena|reclus[aã]o|detenç[aã]o).{0,200}',
+                re.IGNORECASE | re.DOTALL
+            )
             m = pattern.search(text_lower)
             if m:
                 pos = max(0, m.start() - 500)
