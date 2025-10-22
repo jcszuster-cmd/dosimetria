@@ -27,12 +27,11 @@ def load_html_text(path: Path) -> str:
 
 def parse_minimum_penalty_from_snippet(snippet: str):
     """
-    Tenta extrair o menor valor de pena (em meses) a partir de um trecho de texto.
+    Tenta extrair o valor de pena (em anos) a partir de um trecho de texto.
     Procura padrões como:
-      - 'X anos' ou 'X ano'  -> converte para meses (X * 12)
-      - 'X meses' ou 'X mês' -> X meses
+      - 'de X a Y anos'
       - 'X a Y anos' -> pega X (pena mínima)
-      - 'X a Y meses' -> pega X
+      - 'X a Y anos' -> pega Y (pena maxima)
     Retorna inteiro de meses ou None se não encontrou.
     """
     s = snippet.lower()
