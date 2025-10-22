@@ -27,13 +27,12 @@ def load_html_text(path: Path) -> str:
 
 def parse_minimum_penalty_from_snippet(snippet: str):
     """
-    Tenta extrair o valor de pena (em anos) a partir de um trecho de texto.
+    Extrair o valor de pena (em anos) a partir de um trecho de texto.
     Procura padrões como:
       - 'de X a Y anos'
       - 'X a Y anos' -> pega X (pena mínima)
       - 'X a Y anos' -> pega Y (pena maxima)
-    Retorna inteiro de meses ou None se não encontrou.
-    """
+    Retorna inteiro de anos
     s = snippet.lower()
 
     # pattern de intervalo: '(\d+) a (\d+) anos|meses'
@@ -45,26 +44,11 @@ def parse_minimum_penalty_from_snippet(snippet: str):
             return low * 12
         return low
 
-    # pattern 'X anos' ou 'X anos e Y meses' -> pega X
-    m = re.search(r'(\d+)\s*(anos|ano)', s)
-    if m:
-        years = int(m.group(1))
-        return years * 12
-
-    # pattern 'X meses' ou 'X mês'
-    m = re.search(r'(\d+)\s*(meses|m[eê]ses|m[eê]s|m[eê]s)', s)
-    if m:
-        months = int(m.group(1))
-        return months
-
-    # pattern 'X dias' -> ignorado (muito pequeno), mas poderia converter se desejar
-    return None
-
 
 def extract_penalties_from_html(text: str, keywords):
     """
-    Para cada keyword, procura sua ocorrência no texto e tenta extrair uma pena mínima.
-    Retorna dict: {keyword: penalty_em_meses_or_None}
+    Para cada keyword, procura sua ocorrência no texto e tenta extrair uma pena.
+    Retorna dict: {keyword: penalty}
     """
     text_lower = text.lower()
     results = {}
@@ -88,8 +72,6 @@ def extract_penalties_from_html(text: str, keywords):
                     start2 = max(0, pos - 800)
                     end2 = min(len(text), pos + 800)
                     penalty = parse_minimum_penalty_from_snippet(text[start2:end2])
-        else:
-            penalty = None
 
         results[kw] = penalty
     return results
